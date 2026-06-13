@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5.0" />
+  <title>Universo Ginger · Editorial Review (v4)</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+
+  <!-- QRCode.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+  </script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FAF7F2',
+            sereia: '#D62828',
+            'sereia-hover': '#B01E1E',
+            charcoal: '#1F2937',
+            muted: '#6B7280',
+            'border-light': '#E5E7EB',
+          },
+          fontFamily: {
+            heading: ['"Playfair Display"', 'Georgia', 'serif'],
+            body: ['"Inter"', 'system-ui', 'sans-serif'],
+          },
+          minHeight: {
+            tap: '44px',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    :root {
+      --cream: #FAF7F2;
+      --sereia: #D62828;
+      --charcoal: #1F2937;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+      --white: #FFFFFF;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background: var(--cream);
+      color: var(--charcoal);
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .desktop-container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 2rem;
+      padding-bottom: 8rem; /* room for floating bar */
+    }
+
+    .article-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      gap: 1rem;
+      flex-wrap: wrap;
+      transition: all 0.2s;
+    }
+    .article-row:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .bundle-check {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: var(--sereia);
+      flex-shrink: 0;
+    }
+
+    .btn-send {
+      background: var(--sereia);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      min-height: 44px;
+      transition: all 0.2s;
+    }
+    .btn-send:hover:not(:disabled) { background: var(--sereia-hover); }
+    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-wa {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      min-height: 44px;
+      transition: all 0.2s;
+    }
+    .btn-wa:hover:not(:disabled) { background: #1ebe5d; }
+    .btn-wa:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Floating bundle bar */
+    .floating-bar {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--white);
+      border: 2px solid var(--sereia);
+      border-radius: 14px;
+      padding: 0.85rem 1.25rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 600;
+      max-width: 92%;
+      flex-wrap: wrap;
+      animation: slideUpFb 0.25s ease;
+    }
+    @keyframes slideUpFb { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    .floating-bar .count {
+      font-weight: 600;
+      color: var(--charcoal);
+      font-size: 0.95rem;
+    }
+    .floating-bar .tip {
+      width: 100%;
+      font-size: 0.8rem;
+      color: var(--sereia);
+      text-align: center;
+    }
+
+    /* QR Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 480px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } }
+
+    .qr-large {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    .qr-large canvas {
+      border: 6px solid var(--sereia);
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .status-badge {
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .bundle-title-list {
+      text-align: left;
+      background: #fafafa;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      margin: 0.75rem 0;
+      max-height: 130px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+    }
+    .bundle-title-list ol { margin: 0; padding-left: 1.25rem; }
+    .bundle-title-list li { padding: 0.15rem 0; }
+
+    /* Mobile progress */
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      background: var(--cream);
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      z-index: 50;
+    }
+    .progress-bar {
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--sereia);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .bundle-progress-line {
+      font-size: 0.75rem;
+      color: var(--sereia);
+      font-weight: 600;
+      margin-top: 0.15rem;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 1rem;
+      border: 2px solid transparent;
+      transition: border-color 0.3s, transform 0.2s;
+    }
+    .card.active-card { border-color: var(--sereia); }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.5rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.95rem;
+      text-align: left;
+      min-height: 48px;
+      transition: all 0.2s;
+    }
+    .option-btn.selected {
+      border-color: var(--sereia);
+      background: #fef2f2;
+      font-weight: 600;
+    }
+    .option-btn.selected::after {
+      content: '✓';
+      margin-left: auto;
+      color: var(--sereia);
+      font-weight: bold;
+    }
+
+    .btn-voice {
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .btn-voice.listening {
+      background: #fee2e2;
+      border-color: var(--sereia);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(214,40,40,0.3); } 50% { box-shadow: 0 0 0 8px rgba(214,40,40,0); } }
+
+    .swipe-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 0.25rem;
+    }
+
+    .check-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #d1fae5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      animation: pop 0.4s ease;
+    }
+    @keyframes pop { from { transform: scale(0); } }
+
+    .article-content h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 600;
+      color: var(--charcoal);
+      margin-top: 1.5rem;
+    }
+
+    .desktop-response-panel {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid #d1fae5;
+    }
+
+    /* Bundle screens (mobile) */
+    .bundle-screen {
+      padding: 1.5rem 1rem 2rem;
+      max-width: 480px;
+      margin: auto;
+    }
+    .bundle-screen h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin: 0.5rem 0 0.75rem;
+    }
+    .bundle-screen .titles {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      margin: 1rem 0;
+    }
+    .bundle-screen .titles ol { margin: 0; padding-left: 1.25rem; }
+    .bundle-screen .titles li {
+      padding: 0.3rem 0;
+      font-size: 0.95rem;
+      color: var(--charcoal);
+    }
+    .bundle-screen .titles li.done {
+      color: #059669;
+      text-decoration: line-through;
+    }
+    .bundle-screen .btn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 1.25rem;
+    }
+    .bundle-screen .btn-stack button {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      font-weight: 600;
+    }
+    .btn-primary-lg {
+      background: var(--sereia);
+      color: white;
+    }
+    .btn-secondary-lg {
+      background: white;
+      color: var(--charcoal);
+      border: 2px solid var(--border) !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== DESKTOP VIEW (Jerome) ========== -->
+  <div id="desktop-view" class="desktop-container" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <div>
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin:0;">Universo Ginger</h1>
+        <p style="color:var(--muted); margin:0.2rem 0 0;">Review Panel · Jerome · v3 bundles</p>
+      </div>
+      <span style="background:var(--sereia); color:white; padding:0.3rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:600;">Editor-in-Chief</span>
+    </div>
+    <div id="article-list"></div>
+    <div id="response-container"></div>
+  </div>
+
+  <!-- Floating bundle action bar (desktop) -->
+  <div id="floating-bar" class="floating-bar" style="display: none;">
+    <span class="count" id="lote-count">0 articles selected</span>
+    <button id="lote-qr-btn" class="btn-send">📱 Generate Bundle QR</button>
+    <button id="lote-wa-btn" class="btn-wa">📲 Send Bundle via WhatsApp</button>
+    <button id="lote-clear-btn" style="background:transparent; border:1px solid var(--border); padding:0.5rem 0.85rem; border-radius:8px; cursor:pointer; font-size:0.85rem;">Clear</button>
+    <span class="tip" id="lote-tip" style="display:none;">Max 4 articles per bundle (her pacing)</span>
+  </div>
+
+  <!-- QR Modal (single + lote share the modal; content switches by mode) -->
+  <div id="qr-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3 id="qr-modal-title" style="font-family:'Playfair Display',serif;">📱 Share Review</h3>
+      <p id="qr-modal-sub" style="font-size:0.85rem; color:var(--muted);">Patricia can scan with her phone</p>
+      <div id="qr-modal-bundle-list" class="bundle-title-list" style="display:none;"></div>
+      <div class="qr-large" id="qr-canvas"></div>
+      <div id="qr-status" class="status-badge" style="background:#f3f4f6; color:var(--muted);">⚪ Waiting for scan</div>
+      <div style="margin-top:0.75rem; display: flex; gap:0.5rem; justify-content: center; flex-wrap: wrap;">
+        <button id="copy-link-btn" style="background:white; border:1px solid var(--border); padding:0.5rem 1rem; border-radius:8px; cursor:pointer;">📋 Copy link</button>
+        <button id="wa-send-btn" style="background:#25D366; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; font-weight:600; cursor:pointer;">📲 Send via WhatsApp</button>
+        <button id="close-qr-btn" style="background:var(--sereia); color:white; border:none; padding:0.5rem 1.5rem; border-radius:8px; font-weight:600; cursor:pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MOBILE VIEW (Patricia) ========== -->
+  <div id="mobile-view" style="display: none; max-width: 480px; margin: auto; min-height: 100vh; background: var(--cream); padding-bottom: 2rem;">
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="bundle-progress-line" id="bundle-progress-line" style="display:none;"></div>
+        <div style="font-size:0.7rem; color:var(--muted); margin-left:auto;" id="progress-label">—</div>
+      </div>
+    </div>
+    <div id="mobile-content"></div>
+  </div>
+
+  <script>
+    (() => {
+      // ===========================================
+      // DATA & HELPERS
+      // ===========================================
+      const STORAGE_PREFIX = 'ug2_';
+      const SESSION_TTL = 60 * 60 * 1000; // 1 hour for demo
+      const BUNDLE_MAX = 4;
+      const PATRICIA_WA = '5521979581044';
+
+      const ARTICLES = [
+        {
+          id: 1,
+          title: 'Pele oleosa: o que funciona de verdade',
+          category: 'Beleza',
+          date: '15/05/2026',
+          content: `
+            <p>Se você convive com a pele oleosa, já deve ter ouvido de tudo – desde receitas caseiras até promessas de produtos que "secam" a oleosidade em um passe de mágica. Mas a real é que cuidar da pele oleosa exige equilíbrio, não guerra declarada contra o brilho.</p>
+            <h3>Por que sua pele produz tanto óleo?</h3>
+            <p>A produção de sebo é regulada por hormônios, genética e até pelo clima. No calor carioca, as glândulas sebáceas trabalham em ritmo acelerado. Mas o sebo não é vilão – ele protege a barreira cutânea e mantém a hidratação natural. O problema é o excesso, que pode levar a poros dilatados e acne.</p>
+            <h3>O erro mais comum</h3>
+            <p>Muita gente aposta em produtos adstringentes agressivos, achando que "ressecar" resolve. Só que a pele entende isso como um ataque e responde produzindo ainda mais óleo. É o famoso efeito rebote. A chave está em limpar com suavidade e hidratar com inteligência.</p>
+            <h3>Ingredientes que realmente ajudam</h3>
+            <p>Ácido salicílico em concentrações baixas (0,5% a 2%) ajuda a desobstruir poros sem agredir. Niacinamida é outro aliado poderoso: regula a produção de sebo, acalma vermelhidão e ainda uniformiza o tom da pele. Para hidratação, texturas em gel ou sérum com ácido hialurônico funcionam bem – entregam água sem pesar.</p>
+          `
+        },
+        {
+          id: 2,
+          title: 'Cabelos cacheados no verão carioca',
+          category: 'Beleza',
+          date: '14/05/2026',
+          content: `
+            <p>Manter os cachos definidos e saudáveis durante o verão do Rio é um desafio que toda cacheada conhece. Umidade, praia e piscina pedem cuidados específicos para evitar o temido frizz e o ressecamento.</p>
+            <h3>Rotina de umectação</h3>
+            <p>Antes de lavar, aposte na umectação com óleos vegetais como coco ou abacate. Deixe agir por pelo menos 20 minutos – o cabelo absorve a nutrição que perdeu com o sol e o sal.</p>
+            <h3>Low poo e co-wash</h3>
+            <p>No verão, lavar com menos sulfato ajuda a preservar a oleosidade natural. O co-wash (lavagem com condicionador de limpeza) intercala muito bem com o shampoo low poo, mantendo a hidratação sem pesar.</p>
+          `
+        },
+        {
+          id: 3,
+          title: 'Moda sustentável: marcas brasileiras que amamos',
+          category: 'Moda',
+          date: '13/05/2026',
+          content: `
+            <p>O slow fashion brasileiro tá cada vez mais forte – e não é à toa. Marcas independentes estão unindo estilo, ética e produção local de um jeito que a gente nunca viu. Separamos algumas que merecem sua atenção.</p>
+            <h3>Fibra de urtiga? Sim.</h3>
+            <p>A marca paraense Yara tece com fibra de urtiga, uma alternativa ao linho que não usa água na produção. As peças são fresquíssimas e contam histórias da floresta.</p>
+          `
+        },
+        {
+          id: 4,
+          title: 'Saúde mental e autocuidado sem culpa',
+          category: 'Bem-estar',
+          date: '12/05/2026',
+          content: `
+            <p>Cuidar da cabeça é tão importante quanto cuidar do corpo – mas a gente ainda vive um tabu sobre tirar um tempo só pra si. Bora falar sobre como incluir pausas reais na rotina sem achar que é egoísmo.</p>
+            <h3>Micro-pausas que funcionam</h3>
+            <p>Não precisa de um retiro de silêncio. Cinco minutos longe da tela, respiração consciente ou simplesmente olhar pela janela já reduzem o cortisol. A ciência comprova.</p>
+          `
+        },
+        {
+          id: 5,
+          title: 'Receitas práticas para a semana',
+          category: 'Comida',
+          date: '11/05/2026',
+          content: `
+            <p>Comer bem durante a semana não precisa ser complicado. Estas três receitas usam poucos ingredientes e ficam prontas em menos de 30 minutos – perfeitas pra quem quer sabor sem perrengue.</p>
+            <h3>Tigela de abacate com ovo</h3>
+            <p>Arroz integral, abacate amassado com limão, ovo pochê e gergelim. Pronto em 15 minutos e sustenta até o fim do dia.</p>
+          `
+        }
+      ];
+
+      const cardDefinitions = {
+        1: {
+          title: 'Como tá esse artigo?',
+          type: 'choice',
+          options: [
+            { value: 'approve_as_is', label: 'Aprovar como está', emoji: '✅' },
+            { value: 'approve_small_changes', label: 'Aprovar com mudanças pequenas', emoji: '✏️' },
+            { value: 'needs_major_revision', label: 'Precisa revisão maior', emoji: '⚠️' },
+            { value: 'restart_new_angle', label: 'Recomeçar com outro ângulo', emoji: '❌' }
+          ]
+        },
+        2: {
+          title: 'A voz da Lívia tá certa?',
+          type: 'choice',
+          options: [
+            { value: 'yes_sounds_like_livia', label: 'Sim, soa como a Lívia', emoji: '👍' },
+            { value: 'almost_livia', label: 'Quase – tem um detalhe que não soa', emoji: '🤔' },
+            { value: 'no_rewrite', label: 'Não – precisa reescrever', emoji: '👎' }
+          ]
+        },
+        3: {
+          title: 'Os fatos estão corretos?',
+          type: 'choice',
+          options: [
+            { value: 'all_correct', label: 'Tudo correto', emoji: '✅' },
+            { value: 'some_check', label: 'Alguma coisa precisa checar', emoji: '🔍' },
+            { value: 'factual_error', label: 'Tem erro factual claro', emoji: '❌' }
+          ]
+        },
+        4: {
+          title: 'Algum problema de brand-fit?',
+          type: 'checkbox',
+          options: [
+            { value: 'banned_phrase', label: 'Frase ou palavra banida apareceu' },
+            { value: 'tier3_product', label: 'Recomenda produto de Tier-3' },
+            { value: 'medical_claim', label: 'Promete coisa medicinal/jurídica/financeira' },
+            { value: 'aggressive_tone', label: 'Tom muito agressivo ou muito puxa-saco' },
+            { value: 'other_brand', label: 'Outro' }
+          ]
+        },
+        5: { title: 'Que mudanças específicas você quer?', type: 'text' },
+        6: { title: 'Sugestão de foto de capa?', type: 'text' },
+        7: { title: 'Direção pro áudio?', type: 'text' },
+        8: { title: 'Produto pra linkar com afiliação?', type: 'text' },
+        9: { title: 'Como você se sentiu lendo?', type: 'text' },
+        10: {
+          title: 'Pode publicar depois das mudanças?',
+          type: 'choice',
+          options: [
+            { value: 'publish_after_changes', label: 'Sim, depois das mudanças que pedi', emoji: '✅' },
+            { value: 'need_see_again', label: 'Não, preciso ver de novo depois', emoji: '👀' },
+            { value: 'publish_exact', label: 'Sim se as mudanças forem feitas exatamente como pedi', emoji: '🎯' }
+          ]
+        }
+      };
+
+      function storageKey(key) { return STORAGE_PREFIX + key; }
+      function getSession(token) {
+        const raw = localStorage.getItem(storageKey('sess_' + token));
+        return raw ? JSON.parse(raw) : null;
+      }
+      function saveSession(token, data) {
+        localStorage.setItem(storageKey('sess_' + token), JSON.stringify(data));
+      }
+      function getResponse(token) {
+        const raw = localStorage.getItem(storageKey('resp_' + token));
+        return raw ? JSON.parse(raw) : null;
+      }
+      function saveResponse(token, data) {
+        localStorage.setItem(storageKey('resp_' + token), JSON.stringify(data));
+      }
+      function getBundleSession(token) {
+        const raw = localStorage.getItem(storageKey('bundle_' + token));
+        return raw ? JSON.parse(raw) : null;
+      }
+      function saveBundleSession() {
+        if (!state.bundleSession) return;
+        localStorage.setItem(storageKey('bundle_' + state.token), JSON.stringify(state.bundleSession));
+      }
+      function generateToken() {
+        return [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+      }
+      function isExpired(session) {
+        return (Date.now() - new Date(session.created_at).getTime()) > SESSION_TTL;
+      }
+
+      // ===========================================
+      // DESKTOP LOGIC
+      // ===========================================
+      const desktopView = document.getElementById('desktop-view');
+      const qrModal = document.getElementById('qr-modal');
+      const floatingBar = document.getElementById('floating-bar');
+      let pollingInterval = null;
+      let currentToken = null;
+      const selectedArticles = new Set();
+
+      function renderArticles() {
+        const list = document.getElementById('article-list');
+        let html = '';
+        ARTICLES.forEach(a => {
+          const existing = getArticleToken(a.id);
+          const sess = existing ? getSession(existing) : null;
+          const submitted = sess?.status === 'submitted';
+          const active = sess && !submitted && !isExpired(sess);
+          const checked = selectedArticles.has(a.id) ? 'checked' : '';
+          html += `
+            <div class="article-row">
+              <input type="checkbox" class="bundle-check" data-article-id="${a.id}" ${checked} title="Adicionar ao lote" />
+              <div style="flex:1;">
+                <strong style="font-family:'Playfair Display',serif; font-size:1.1rem;">${esc(a.title)}</strong>
+                <div style="font-size:0.8rem; color:var(--muted); display:flex; gap:1rem; margin-top:0.25rem;">
+                  <span style="background:#fef3c7; color:#92400e; padding:0.15rem 0.6rem; border-radius:20px;">${esc(a.category)}</span>
+                  <span>${a.date}</span>
+                  ${active ? '<span style="color:#d62828;">● Waiting</span>' : ''}
+                  ${submitted ? '<span style="color:#059669;">● Reviewed</span>' : ''}
+                </div>
+              </div>
+              <div>
+                ${submitted ? `<button class="btn-send" style="background:#059669;" onclick="viewResponse('${existing}')">📋 View response</button>` :
+                  active ? `<button class="btn-send" onclick="openQR('${existing}', ${a.id})">📱 QR active</button>` :
+                  `<button class="btn-send" onclick="startReview(${a.id})">📤 Send for review</button>`}
+              </div>
+            </div>
+          `;
+        });
+        list.innerHTML = html;
+        // Wire up checkboxes
+        list.querySelectorAll('.bundle-check').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            const id = parseInt(e.target.dataset.articleId, 10);
+            if (e.target.checked) selectedArticles.add(id);
+            else selectedArticles.delete(id);
+            updateFloatingBar();
+          });
+        });
+        updateFloatingBar();
+      }
+
+      function updateFloatingBar() {
+        const count = selectedArticles.size;
+        const qrBtn = document.getElementById('lote-qr-btn');
+        const waBtn = document.getElementById('lote-wa-btn');
+        const tip = document.getElementById('lote-tip');
+        const countEl = document.getElementById('lote-count');
+        if (count === 0) {
+          floatingBar.style.display = 'none';
+          return;
+        }
+        floatingBar.style.display = 'flex';
+        countEl.textContent = count === 1 ? '1 article selected' : `${count} articles selected`;
+        const overLimit = count > BUNDLE_MAX;
+        qrBtn.disabled = overLimit;
+        waBtn.disabled = overLimit;
+        tip.style.display = overLimit ? 'block' : 'none';
+      }
+
+      function getArticleToken(articleId) {
+        const map = JSON.parse(localStorage.getItem(storageKey('map')) || '{}');
+        return map[articleId] || null;
+      }
+      function setArticleToken(articleId, token) {
+        const map = JSON.parse(localStorage.getItem(storageKey('map')) || '{}');
+        map[articleId] = token;
+        localStorage.setItem(storageKey('map'), JSON.stringify(map));
+      }
+
+      window.startReview = (articleId) => {
+        const token = generateToken();
+        const session = {
+          token,
+          article_id: articleId,
+          status: 'waiting',
+          created_at: new Date().toISOString(),
+          responses: {},
+          card_sequence: null,
+          current_card: null
+        };
+        saveSession(token, session);
+        setArticleToken(articleId, token);
+        renderArticles();
+        openQR(token, articleId);
+      };
+
+      window.openQR = (token, articleId) => {
+        const reviewUrl = `${location.origin}${location.pathname}?view=mobile&token=${token}&article=${articleId}`;
+        const article = ARTICLES.find(a => a.id === articleId);
+        showQrModal({
+          mode: 'single',
+          token,
+          url: reviewUrl,
+          title: '📱 Share Review',
+          subtitle: 'Patricia can scan with her phone',
+          waMessage: `Oi Patricia! Tem um artigo pra revisar: ${article?.title || ''}\n${reviewUrl}`,
+          bundleArticleTitles: null
+        });
+      };
+
+      function generateBundleQR() {
+        const ids = Array.from(selectedArticles);
+        if (ids.length === 0) return;
+        if (ids.length > BUNDLE_MAX) return; // button is disabled but defense-in-depth
+
+        // Warn about active sessions
+        const activeIds = ids.filter(id => {
+          const tok = getArticleToken(id);
+          if (!tok) return false;
+          const s = getSession(tok);
+          return s && s.status !== 'submitted' && !isExpired(s);
+        });
+        if (activeIds.length > 0) {
+          const titles = activeIds.map(id => ARTICLES.find(a => a.id === id)?.title).filter(Boolean).join(', ');
+          if (!confirm(`Already have an active QR for: ${titles}.\nAdding to bundle will create a new one. Continue?`)) {
+            return;
+          }
+        }
+
+        const bundleToken = generateToken();
+        const bundleSession = {
+          token: bundleToken,
+          article_ids: ids,
+          current_index: 0,
+          submitted_articles: [],
+          status: 'created',
+          per_article_state: {},
+          created_at: new Date().toISOString()
+        };
+        localStorage.setItem(storageKey('bundle_' + bundleToken), JSON.stringify(bundleSession));
+
+        const reviewUrl = `${location.origin}${location.pathname}?view=mobile&token=${bundleToken}&articles=${ids.join(',')}`;
+        const titles = ids.map(id => ARTICLES.find(a => a.id === id)?.title).filter(Boolean);
+        const titlesList = titles.map((t, i) => `${i+1}. ${t}`).join('\n');
+        const waMessage = `Oi Patricia! Tem um lote de ${ids.length} artigos pra revisar (no seu tempo):\n${titlesList}\n${reviewUrl}`;
+
+        showQrModal({
+          mode: 'bundle',
+          token: bundleToken,
+          url: reviewUrl,
+          title: `📱 Share Bundle (${ids.length} articles)`,
+          subtitle: 'Patricia pode revisar todos agora ou pausar e voltar',
+          waMessage,
+          bundleArticleTitles: titles
+        });
+      }
+
+      function sendBundleWhatsapp() {
+        const ids = Array.from(selectedArticles);
+        if (ids.length === 0 || ids.length > BUNDLE_MAX) return;
+
+        const activeIds = ids.filter(id => {
+          const tok = getArticleToken(id);
+          if (!tok) return false;
+          const s = getSession(tok);
+          return s && s.status !== 'submitted' && !isExpired(s);
+        });
+        if (activeIds.length > 0) {
+          const titles = activeIds.map(id => ARTICLES.find(a => a.id === id)?.title).filter(Boolean).join(', ');
+          if (!confirm(`Already have an active QR for: ${titles}.\nAdding to bundle will create a new one. Continue?`)) {
+            return;
+          }
+        }
+
+        const bundleToken = generateToken();
+        const bundleSession = {
+          token: bundleToken,
+          article_ids: ids,
+          current_index: 0,
+          submitted_articles: [],
+          status: 'created',
+          per_article_state: {},
+          created_at: new Date().toISOString()
+        };
+        localStorage.setItem(storageKey('bundle_' + bundleToken), JSON.stringify(bundleSession));
+
+        const reviewUrl = `${location.origin}${location.pathname}?view=mobile&token=${bundleToken}&articles=${ids.join(',')}`;
+        const titles = ids.map(id => ARTICLES.find(a => a.id === id)?.title).filter(Boolean);
+        const titlesList = titles.map((t, i) => `${i+1}. ${t}`).join('\n');
+        const msg = `Oi Patricia! Tem um lote de ${ids.length} artigos pra revisar (no seu tempo):\n${titlesList}\n${reviewUrl}`;
+        const waUrl = `https://wa.me/${PATRICIA_WA}?text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
+      }
+
+      function showQrModal({ mode, token, url, title, subtitle, waMessage, bundleArticleTitles }) {
+        currentToken = token;
+        qrModal.style.display = 'flex';
+        document.getElementById('qr-modal-title').textContent = title;
+        document.getElementById('qr-modal-sub').textContent = subtitle;
+
+        const bundleList = document.getElementById('qr-modal-bundle-list');
+        if (bundleArticleTitles && bundleArticleTitles.length) {
+          bundleList.style.display = 'block';
+          bundleList.innerHTML = '<ol>' + bundleArticleTitles.map(t => `<li>${esc(t)}</li>`).join('') + '</ol>';
+        } else {
+          bundleList.style.display = 'none';
+          bundleList.innerHTML = '';
+        }
+
+        document.getElementById('qr-canvas').innerHTML = '';
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(document.getElementById('qr-canvas'), {
+            text: url,
+            width: 320,
+            height: 320,
+            colorDark: '#1f2937',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        }
+        document.getElementById('copy-link-btn').onclick = () => {
+          navigator.clipboard.writeText(url).then(() => alert('Link copied!'));
+        };
+        const waBtn = document.getElementById('wa-send-btn');
+        if (waBtn) {
+          waBtn.onclick = () => {
+            const waUrl = `https://wa.me/${PATRICIA_WA}?text=${encodeURIComponent(waMessage)}`;
+            window.open(waUrl, '_blank');
+          };
+        }
+        document.getElementById('close-qr-btn').onclick = () => {
+          qrModal.style.display = 'none';
+          clearInterval(pollingInterval);
+        };
+        updateQRStatus(token, mode);
+        clearInterval(pollingInterval);
+        pollingInterval = setInterval(() => {
+          if (mode === 'bundle') {
+            const b = getBundleSession(token);
+            updateBundleQRStatus(b);
+            if (b && b.status === 'completed') {
+              clearInterval(pollingInterval);
+            }
+          } else {
+            const sess = getSession(token);
+            if (!sess || isExpired(sess)) {
+              updateQRStatus(token, mode);
+              clearInterval(pollingInterval);
+            } else {
+              updateQRStatus(token, mode);
+              if (sess.status === 'submitted') {
+                clearInterval(pollingInterval);
+                setTimeout(() => {
+                  qrModal.style.display = 'none';
+                  viewResponse(token);
+                }, 600);
+              }
+            }
+          }
+        }, 1000);
+      }
+
+      function updateQRStatus(token, mode) {
+        const el = document.getElementById('qr-status');
+        if (mode === 'bundle') {
+          updateBundleQRStatus(getBundleSession(token));
+          return;
+        }
+        const sess = getSession(token);
+        if (!sess) {
+          el.innerHTML = '⚪ Waiting for scan'; el.style.background='#f3f4f6'; el.style.color='var(--muted)';
+        } else {
+          switch(sess.status) {
+            case 'waiting': el.innerHTML='⚪ Waiting for scan'; el.style.background='#f3f4f6'; el.style.color='var(--muted)'; break;
+            case 'scanned': el.innerHTML='🟡 Patricia scanned'; el.style.background='#fef3c7'; el.style.color='#92400e'; break;
+            case 'reviewing': el.innerHTML='🟠 Patricia is reviewing'; el.style.background='#fed7aa'; el.style.color='#9a3412'; break;
+            case 'submitted': el.innerHTML='🟢 Submitted!'; el.style.background='#d1fae5'; el.style.color='#065f46'; break;
+          }
+        }
+      }
+
+      function updateBundleQRStatus(b) {
+        const el = document.getElementById('qr-status');
+        if (!b) {
+          el.innerHTML = '⚪ Bundle created, waiting'; el.style.background='#f3f4f6'; el.style.color='var(--muted)';
+          return;
+        }
+        const total = b.article_ids.length;
+        const done = b.submitted_articles.length;
+        if (b.status === 'completed' || done >= total) {
+          el.innerHTML = `🟢 Bundle complete (${done}/${total})`; el.style.background='#d1fae5'; el.style.color='#065f46';
+        } else if (done > 0) {
+          el.innerHTML = `🟠 In review (${done}/${total})`; el.style.background='#fed7aa'; el.style.color='#9a3412';
+        } else if (b.status === 'reviewing') {
+          el.innerHTML = `🟡 Patricia started`; el.style.background='#fef3c7'; el.style.color='#92400e';
+        } else {
+          el.innerHTML = '⚪ Bundle created, waiting'; el.style.background='#f3f4f6'; el.style.color='var(--muted)';
+        }
+      }
+
+      // Floating bar buttons
+      document.getElementById('lote-qr-btn').addEventListener('click', generateBundleQR);
+      document.getElementById('lote-wa-btn').addEventListener('click', sendBundleWhatsapp);
+      document.getElementById('lote-clear-btn').addEventListener('click', () => {
+        selectedArticles.clear();
+        renderArticles();
+      });
+
+      window.viewResponse = (token) => {
+        const response = getResponse(token);
+        const sess = getSession(token);
+        if (!response || !sess) return;
+        const article = ARTICLES.find(a => a.id === sess.article_id);
+        const labels = {
+          card_1:'Overall Verdict', card_2:'Lívia voice', card_3:'Facts', card_4:'Brand-fit',
+          card_5:'Specific edits', card_6:'Hero image', card_7:'Audio direction', card_8:'Affiliate',
+          card_9:'Feeling', card_10:'Final verdict'
+        };
+        let html = `<div class="desktop-response-panel"><h3 style="font-family:'Playfair Display',serif;">📋 Review: ${esc(article?.title||'')}</h3>`;
+        Object.entries(response).forEach(([key, val]) => {
+          if (val === undefined || val === null || val === '') return;
+          let display = Array.isArray(val) ? val.join(', ') : val;
+          if (typeof val === 'string' && val.match(/^[a-z_]+$/)) {
+            const map = { approve_as_is:'✅ Approve as is', approve_small_changes:'✏️ Small changes', needs_major_revision:'⚠️ Major revision', restart_new_angle:'❌ New angle', yes_sounds_like_livia:'👍 Yes, Lívia', almost_livia:'🤔 Almost', no_rewrite:'👎 Rewrite', all_correct:'✅ All correct', some_check:'🔍 Check', factual_error:'❌ Factual error', publish_after_changes:'✅ Yes, after changes', need_see_again:'👀 See again', publish_exact:'🎯 Exactly as requested' };
+            display = map[val] || val;
+          }
+          html += `<div style="display:flex; padding:0.5rem 0; border-bottom:1px solid var(--border);"><span style="font-weight:600; width:150px;">${labels[key]||key}</span><span>${esc(display)}</span></div>`;
+        });
+        html += `<button class="btn-send" style="margin-top:1rem;" onclick="document.getElementById('response-container').innerHTML='';renderArticles();">✨ Implement changes</button></div>`;
+        document.getElementById('response-container').innerHTML = html;
+      };
+
+      // ===========================================
+      // MOBILE LOGIC
+      // ===========================================
+      const mobileView = document.getElementById('mobile-view');
+      let state = {
+        mode: 'single',          // 'single' | 'bundle'
+        token: '',
+        session: null,
+        bundleSession: null,
+        article: null,
+        responsesRef: null,      // points to the active responses object for the current article
+        currentCardId: 0,
+        cardSequence: [],
+        cardIndex: 0,
+        autoAdvance: null,
+        selectedChoice: null,
+        swipeStartX: 0
+      };
+
+      function initMobile() {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        if (!token) return showMobileError('Token ausente');
+
+        // Bundle routing: ?articles=1,2,3 takes precedence
+        const articlesParam = params.get('articles');
+        if (articlesParam) {
+          const ids = articlesParam.split(',')
+            .map(s => parseInt(s.trim(), 10))
+            .filter(n => Number.isFinite(n) && ARTICLES.some(a => a.id === n));
+          if (ids.length === 0) return showMobileError('Lote inválido', 'Nenhum artigo válido nos parâmetros.');
+          let capped = ids;
+          if (ids.length > BUNDLE_MAX) {
+            console.warn(`Bundle capped from ${ids.length} to ${BUNDLE_MAX}`);
+            capped = ids.slice(0, BUNDLE_MAX);
+          }
+          if (capped.length === 1) {
+            // Spec: single article in bundle param = no bundle UI
+            return initSingleArticleSession(token, capped[0]);
+          }
+          return initBundleMobile(token, capped);
+        }
+
+        // Single article (legacy ?article= param)
+        const urlArticleId = parseInt(params.get('article')) || null;
+        return initSingleArticleSession(token, urlArticleId);
+      }
+
+      function initSingleArticleSession(token, urlArticleId) {
+        state.mode = 'single';
+        state.bundleSession = null;
+        let sess = getSession(token);
+        if ((!sess || isExpired(sess)) && urlArticleId) {
+          sess = {
+            token,
+            article_id: urlArticleId,
+            status: 'scanned',
+            created_at: new Date().toISOString(),
+            responses: {},
+            card_sequence: null,
+            current_card: null
+          };
+          saveSession(token, sess);
+        }
+        if (!sess || isExpired(sess)) return showMobileError('Sessão expirada ou inválida', 'Peça um novo QR code.');
+        if (sess.status === 'submitted') return showConfirmation(sess);
+        const article = ARTICLES.find(a => a.id === sess.article_id);
+        if (!article) return showMobileError('Artigo não encontrado');
+
+        state.token = token;
+        state.session = sess;
+        state.article = article;
+        state.responsesRef = sess.responses;
+
+        if (sess.status === 'waiting') {
+          sess.status = 'scanned';
+          sess.scanned_at = new Date().toISOString();
+          saveSession(token, sess);
+        }
+        document.getElementById('bundle-progress-line').style.display = 'none';
+        computeSequence();
+        if (sess.current_card && sess.card_sequence) {
+          const idx = sess.card_sequence.indexOf(sess.current_card);
+          state.cardIndex = idx >= 0 ? idx : 0;
+        } else {
+          state.cardIndex = 0;
+        }
+        state.currentCardId = state.cardSequence[state.cardIndex] || 1;
+        renderMobileArticle();
+        updateProgress();
+      }
+
+      function initBundleMobile(token, articleIds) {
+        state.mode = 'bundle';
+        state.token = token;
+        state.session = null;
+        let bundle = getBundleSession(token);
+        if (!bundle) {
+          bundle = {
+            token,
+            article_ids: articleIds,
+            current_index: 0,
+            submitted_articles: [],
+            status: 'reviewing',
+            per_article_state: {},
+            created_at: new Date().toISOString()
+          };
+        }
+        // Always honor the URL articleIds in case they differ (URL is canonical for sequence)
+        bundle.article_ids = articleIds;
+        state.bundleSession = bundle;
+        saveBundleSession();
+
+        // Already finished? show completion
+        if (bundle.status === 'completed' || bundle.current_index >= bundle.article_ids.length) {
+          return showBundleCompletion();
+        }
+
+        const touched = Object.keys(bundle.per_article_state).length > 0
+          || bundle.submitted_articles.length > 0;
+        if (!touched) {
+          renderBundleIntro();
+        } else {
+          loadArticleInBundle(bundle.article_ids[bundle.current_index]);
+        }
+      }
+
+      function renderBundleIntro() {
+        document.getElementById('bundle-progress-line').style.display = 'none';
+        document.getElementById('progress-fill').style.width = '0%';
+        document.getElementById('progress-label').textContent = '—';
+        const ids = state.bundleSession.article_ids;
+        const titles = ids.map(id => ARTICLES.find(a => a.id === id)).filter(Boolean);
+        const titlesHtml = titles.map((a, i) => `<li>${esc(a.title)}</li>`).join('');
+        const content = document.getElementById('mobile-content');
+        content.innerHTML = `
+          <div class="bundle-screen">
+            <h2>Oi Patricia 💛</h2>
+            <p style="font-size:0.95rem; color:var(--charcoal);">Tem ${ids.length} artigos nesse lote pra revisar.</p>
+            <div class="titles"><ol>${titlesHtml}</ol></div>
+            <p style="font-size:0.9rem; color:var(--muted);">Você pode fazer todos agora ou pausar e voltar depois — o que cabe melhor no seu dia.</p>
+            <div class="btn-stack">
+              <button class="btn-primary-lg" id="bundle-start-btn">Próximo →</button>
+            </div>
+          </div>
+        `;
+        document.getElementById('bundle-start-btn').addEventListener('click', () => {
+          loadArticleInBundle(state.bundleSession.article_ids[state.bundleSession.current_index]);
+        });
+      }
+
+      function loadArticleInBundle(articleId) {
+        const article = ARTICLES.find(a => a.id === articleId);
+        if (!article) {
+          // Skip gracefully and advance
+          state.bundleSession.current_index++;
+          saveBundleSession();
+          if (state.bundleSession.current_index >= state.bundleSession.article_ids.length) {
+            if (state.bundleSession.submitted_articles.length === 0) {
+              return showMobileError('Lote vazio', 'Nenhum artigo válido encontrado.');
+            }
+            return showBundleCompletion();
+          }
+          return loadArticleInBundle(state.bundleSession.article_ids[state.bundleSession.current_index]);
+        }
+
+        state.article = article;
+        if (!state.bundleSession.per_article_state[articleId]) {
+          state.bundleSession.per_article_state[articleId] = {
+            responses: {},
+            current_card: null,
+            card_sequence: null
+          };
+        }
+        const perA = state.bundleSession.per_article_state[articleId];
+        state.responsesRef = perA.responses;
+
+        if (state.bundleSession.status === 'created') {
+          state.bundleSession.status = 'reviewing';
+        }
+        saveBundleSession();
+
+        // Bundle progress indicator
+        const bp = document.getElementById('bundle-progress-line');
+        bp.style.display = 'block';
+        bp.textContent = `Artigo ${state.bundleSession.current_index + 1} de ${state.bundleSession.article_ids.length}`;
+
+        computeSequence();
+        if (perA.current_card && state.cardSequence.includes(perA.current_card)) {
+          state.cardIndex = state.cardSequence.indexOf(perA.current_card);
+        } else {
+          state.cardIndex = 0;
+        }
+        state.currentCardId = state.cardSequence[state.cardIndex] || 1;
+        renderMobileArticle();
+        updateProgress();
+      }
+
+      function computeSequence() {
+        const resp = state.responsesRef || {};
+        const verdict = resp['card_1'];
+        let seq;
+        if (!verdict) seq = [1];
+        else {
+          switch(verdict) {
+            case 'approve_as_is': seq = [1,10]; break;
+            case 'approve_small_changes': seq = [1,2,3,4,5,6,7,8,9,10]; break;
+            case 'needs_major_revision': seq = [1,2,4,5,9,10]; break;
+            case 'restart_new_angle': seq = [1,9,10]; break;
+            default: seq = [1,2,3,4,5,6,7,8,9,10];
+          }
+        }
+        const card4 = resp['card_4'];
+        if (verdict === 'needs_major_revision' && Array.isArray(card4) && card4.length === 0) {
+          seq = seq.filter(c => c !== 5);
+        }
+        state.cardSequence = seq;
+        if (state.mode === 'bundle') {
+          state.bundleSession.per_article_state[state.article.id].card_sequence = seq;
+          saveBundleSession();
+        } else {
+          state.session.card_sequence = seq;
+          saveSession(state.token, state.session);
+        }
+      }
+
+      function renderMobileArticle() {
+        const content = document.getElementById('mobile-content');
+        content.innerHTML = `
+          <div style="padding:1rem;">
+            <span style="background:#fef3c7; color:#92400e; padding:0.2rem 0.8rem; border-radius:20px; font-size:0.8rem;">${esc(state.article.category)}</span>
+            <h2 style="font-family:'Playfair Display',serif; font-size:1.5rem; margin:0.5rem 0;">${esc(state.article.title)}</h2>
+            <div class="article-content" style="font-size:0.95rem; line-height:1.7;">${state.article.content}</div>
+            <div id="deck-container" style="margin-top:2rem;"></div>
+          </div>
+        `;
+        renderCard();
+      }
+
+      function renderCard() {
+        const deck = document.getElementById('deck-container');
+        if (!deck) return;
+        const cardId = state.currentCardId;
+        const def = cardDefinitions[cardId];
+        const saved = state.responsesRef?.['card_'+cardId];
+        state.selectedChoice = saved;
+
+        let html = `<div class="card active-card" id="card-${cardId}">`;
+        html += `<h4 style="font-family:'Playfair Display',serif; font-size:1.1rem;">Card ${cardId} · ${def.title}</h4>`;
+
+        if (def.type === 'choice') {
+          def.options.forEach(opt => {
+            const sel = (saved === opt.value) ? ' selected' : '';
+            html += `<button class="option-btn${sel}" data-value="${opt.value}"><span>${opt.emoji}</span> ${esc(opt.label)}</button>`;
+          });
+          html += `<div style="display:flex; gap:0.5rem; margin-top:1rem;">`;
+          if (state.cardIndex > 0) html += `<button class="btn-voice" id="prev-btn">← Voltar</button>`;
+          html += `<button class="btn-send" id="next-btn" disabled>Próxima →</button></div>`;
+          html += `<p class="swipe-hint" id="auto-hint"></p>`;
+        } else if (def.type === 'checkbox') {
+          const checkedVals = Array.isArray(saved) ? saved : [];
+          def.options.forEach(opt => {
+            const chk = checkedVals.includes(opt.value) ? 'checked' : '';
+            html += `<label style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0;"><input type="checkbox" value="${opt.value}" ${chk}> ${esc(opt.label)}</label>`;
+          });
+          html += `<div style="display:flex; gap:0.5rem; margin-top:1rem;">`;
+          if (state.cardIndex > 0) html += `<button class="btn-voice" id="prev-btn">← Voltar</button>`;
+          html += `<button class="btn-send" id="next-btn">Próxima →</button></div>`;
+        } else if (def.type === 'text') {
+          const val = typeof saved === 'string' ? saved : '';
+          html += `<textarea id="text-${cardId}" style="width:100%; min-height:100px; border:2px solid var(--border); border-radius:8px; padding:0.75rem; font-size:16px;">${esc(val)}</textarea>`;
+          html += `<button class="btn-voice" id="voice-btn-${cardId}">🎤 Ditar</button>`;
+          html += `<div style="display:flex; gap:0.5rem; margin-top:0.75rem;">`;
+          if (state.cardIndex > 0) html += `<button class="btn-voice" id="prev-btn">← Voltar</button>`;
+          html += `<button class="btn-send" id="next-btn">Próxima →</button></div>`;
+        }
+
+        html += `</div>`;
+        if (cardId === 10 && saved) {
+          const submitLabel = (state.mode === 'bundle') ? '📤 Enviar artigo' : '📤 Enviar';
+          html += `<button class="btn-send" style="width:100%; margin-top:1rem; padding:1rem; font-size:1.1rem;" id="submit-btn">${submitLabel}</button>`;
+        }
+        deck.innerHTML = html;
+
+        // event binding
+        if (def.type === 'choice') {
+          document.querySelectorAll('#deck-container .option-btn').forEach(btn => {
+            btn.addEventListener('click', () => selectChoice(cardId, btn.dataset.value));
+          });
+          document.getElementById('next-btn')?.addEventListener('click', nextCard);
+          if (saved) document.getElementById('next-btn').disabled = false;
+        } else if (def.type === 'checkbox') {
+          document.getElementById('next-btn')?.addEventListener('click', () => {
+            const checks = [...document.querySelectorAll('#deck-container input[type="checkbox"]:checked')].map(cb => cb.value);
+            saveResponseCard(cardId, checks.length ? checks : ['none']);
+            if (cardId === 4) { computeSequence(); updateProgress(); }
+            nextCard();
+          });
+        } else if (def.type === 'text') {
+          document.getElementById('next-btn')?.addEventListener('click', () => {
+            const text = document.getElementById(`text-${cardId}`).value;
+            saveResponseCard(cardId, text);
+            nextCard();
+          });
+          document.getElementById(`voice-btn-${cardId}`)?.addEventListener('click', () => startVoice(cardId));
+        }
+        document.getElementById('prev-btn')?.addEventListener('click', prevCard);
+        document.getElementById('submit-btn')?.addEventListener('click', submitReview);
+
+        // Swipe detection
+        const cardEl = document.getElementById(`card-${cardId}`);
+        if (cardEl) {
+          cardEl.addEventListener('touchstart', e => state.swipeStartX = e.touches[0].clientX);
+          cardEl.addEventListener('touchend', e => {
+            const diff = state.swipeStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 60) {
+              if (diff > 0) nextCard();
+              else prevCard();
+            }
+          });
+        }
+
+        updateProgress();
+        if (def.type === 'choice' && saved) startAutoAdvance();
+      }
+
+      function selectChoice(cardId, value) {
+        const btns = document.querySelectorAll('#deck-container .option-btn');
+        btns.forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-checked','false'); });
+        const selected = [...btns].find(b => b.dataset.value === value);
+        if (selected) { selected.classList.add('selected'); selected.setAttribute('aria-checked','true'); }
+        state.selectedChoice = value;
+        saveResponseCard(cardId, value);
+        document.getElementById('next-btn').disabled = false;
+        if (cardId === 1) { computeSequence(); updateProgress(); }
+        if (cardId === 10) {
+          if (!document.getElementById('submit-btn')) {
+            const btn = document.createElement('button');
+            btn.className = 'btn-send';
+            btn.style.cssText = 'width:100%; margin-top:1rem; padding:1rem; font-size:1.1rem;';
+            btn.textContent = (state.mode === 'bundle') ? '📤 Enviar artigo' : '📤 Enviar';
+            btn.id = 'submit-btn';
+            btn.addEventListener('click', submitReview);
+            document.getElementById('deck-container').appendChild(btn);
+          }
+        }
+        clearTimeout(state.autoAdvance);
+        startAutoAdvance();
+      }
+
+      function startAutoAdvance() {
+        const hint = document.getElementById('auto-hint');
+        if (!hint) return;
+        let sec = 5;
+        hint.textContent = `Avanço automático em ${sec}s`;
+        const timer = setInterval(() => { sec--; if (sec>0) hint.textContent = `Avanço automático em ${sec}s`; }, 1000);
+        state.autoAdvance = setTimeout(() => { clearInterval(timer); nextCard(); }, 5000);
+        state._countdown = timer;
+      }
+
+      function saveResponseCard(cardId, value) {
+        if (!state.responsesRef) return;
+        state.responsesRef['card_'+cardId] = value;
+        if (state.mode === 'bundle') {
+          const perA = state.bundleSession.per_article_state[state.article.id];
+          perA.responses = state.responsesRef;
+          perA.current_card = cardId;
+          if (state.bundleSession.status === 'created') state.bundleSession.status = 'reviewing';
+          saveBundleSession();
+        } else {
+          state.session.responses = state.responsesRef;
+          state.session.current_card = cardId;
+          if (state.session.status === 'scanned') state.session.status = 'reviewing';
+          saveSession(state.token, state.session);
+        }
+      }
+
+      function nextCard() {
+        clearTimeout(state.autoAdvance);
+        if (state.cardIndex < state.cardSequence.length-1) {
+          state.cardIndex++;
+          state.currentCardId = state.cardSequence[state.cardIndex];
+          state.selectedChoice = state.responsesRef?.['card_'+state.currentCardId] || null;
+          renderCard();
+          document.getElementById('deck-container').scrollIntoView({behavior:'smooth'});
+        }
+      }
+
+      function prevCard() {
+        clearTimeout(state.autoAdvance);
+        if (state.cardIndex > 0) {
+          state.cardIndex--;
+          state.currentCardId = state.cardSequence[state.cardIndex];
+          if (state.currentCardId === 1) computeSequence();
+          state.selectedChoice = state.responsesRef?.['card_'+state.currentCardId] || null;
+          renderCard();
+          document.getElementById('deck-container').scrollIntoView({behavior:'smooth'});
+        }
+      }
+
+      function submitReview() {
+        const compiled = {};
+        state.cardSequence.forEach(cid => {
+          const val = state.responsesRef?.['card_'+cid];
+          if (val !== undefined) compiled['card_'+cid] = val;
+        });
+
+        if (state.mode === 'bundle') {
+          const articleId = state.article.id;
+          // Persist a per-article response record under the bundle namespace
+          localStorage.setItem(
+            storageKey('bundle_resp_' + state.token + '_' + articleId),
+            JSON.stringify(compiled)
+          );
+          if (!state.bundleSession.submitted_articles.includes(articleId)) {
+            state.bundleSession.submitted_articles.push(articleId);
+          }
+          state.bundleSession.current_index = state.bundleSession.submitted_articles.length;
+          if (state.bundleSession.current_index >= state.bundleSession.article_ids.length) {
+            state.bundleSession.status = 'completed';
+            saveBundleSession();
+            showBundleCompletion();
+          } else {
+            saveBundleSession();
+            showBundleTransition(articleId);
+          }
+        } else {
+          saveResponse(state.token, compiled);
+          state.session.status = 'submitted';
+          state.session.submitted_at = new Date().toISOString();
+          saveSession(state.token, state.session);
+          showConfirmation(state.session);
+        }
+      }
+
+      function showBundleTransition(justSubmittedId) {
+        const submittedArticle = ARTICLES.find(a => a.id === justSubmittedId);
+        const nextId = state.bundleSession.article_ids[state.bundleSession.current_index];
+        const nextArticle = ARTICLES.find(a => a.id === nextId);
+        const remaining = state.bundleSession.article_ids.length - state.bundleSession.current_index;
+        document.getElementById('bundle-progress-line').textContent =
+          `Artigo ${state.bundleSession.current_index} de ${state.bundleSession.article_ids.length} enviado`;
+        document.getElementById('progress-fill').style.width =
+          Math.round((state.bundleSession.current_index / state.bundleSession.article_ids.length) * 100) + '%';
+        document.getElementById('progress-label').textContent =
+          `${state.bundleSession.current_index}/${state.bundleSession.article_ids.length}`;
+
+        const content = document.getElementById('mobile-content');
+        content.innerHTML = `
+          <div class="bundle-screen">
+            <div class="check-circle"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+            <h2 style="text-align:center;">✅ Aprovado!</h2>
+            <p style="text-align:center; color:var(--muted); font-size:0.9rem;">"${esc(submittedArticle?.title || '')}" enviado.</p>
+            <p style="text-align:center; margin-top:1.25rem;">Próximo artigo:</p>
+            <p style="text-align:center; font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--charcoal);">"${esc(nextArticle?.title || '')}"</p>
+            <p style="text-align:center; color:var(--muted); font-size:0.85rem;">Faltam ${remaining}.</p>
+            <div class="btn-stack">
+              <button class="btn-primary-lg" id="bundle-continue-btn">Continuar →</button>
+              <button class="btn-secondary-lg" id="bundle-pause-btn">Pausar e voltar depois</button>
+            </div>
+          </div>
+        `;
+        document.getElementById('bundle-continue-btn').addEventListener('click', () => {
+          loadArticleInBundle(nextId);
+        });
+        document.getElementById('bundle-pause-btn').addEventListener('click', () => {
+          showBundlePaused();
+        });
+      }
+
+      function showBundlePaused() {
+        const done = state.bundleSession.submitted_articles.length;
+        const total = state.bundleSession.article_ids.length;
+        const content = document.getElementById('mobile-content');
+        content.innerHTML = `
+          <div class="bundle-screen" style="text-align:center;">
+            <h2>Salvo! 💾</h2>
+            <p style="color:var(--charcoal);">Você revisou ${done} de ${total} artigos.</p>
+            <p style="color:var(--muted); font-size:0.9rem;">Volte quando quiser — abra o mesmo link de novo e vai retomar do próximo.</p>
+          </div>
+        `;
+      }
+
+      function showBundleCompletion() {
+        const total = state.bundleSession.article_ids.length;
+        document.getElementById('bundle-progress-line').textContent = `Lote completo: ${total} artigos`;
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-label').textContent = `${total}/${total}`;
+        const content = document.getElementById('mobile-content');
+        content.innerHTML = `
+          <div class="bundle-screen" style="text-align:center;">
+            <div class="check-circle"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+            <h2>🎉 Lote completo!</h2>
+            <p>Você revisou ${total} artigos. Vou te avisar quando entrarem no ar.</p>
+          </div>
+        `;
+      }
+
+      function showConfirmation(sess) {
+        document.getElementById('mobile-content').innerHTML = `
+          <div style="text-align:center; padding:3rem 1rem;">
+            <div class="check-circle"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+            <h2 style="font-family:'Playfair Display',serif;">Recebido! 🎉</h2>
+            <p>Vou implementar suas mudanças e te aviso quando o artigo entrar no ar.</p>
+          </div>`;
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-label').textContent = 'Concluído';
+      }
+
+      function showMobileError(title, msg='') {
+        document.getElementById('mobile-content').innerHTML = `
+          <div style="text-align:center; padding:3rem 1rem;">
+            <h2 style="color:var(--sereia); font-family:'Playfair Display',serif;">${esc(title)}</h2>
+            <p>${esc(msg)}</p>
+          </div>`;
+      }
+
+      function updateProgress() {
+        const total = state.cardSequence.length;
+        const current = state.cardIndex + 1;
+        const pct = total ? Math.round((current/total)*100) : 0;
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-label').textContent = `${current}/${total}`;
+      }
+
+      // Voice recognition
+      function startVoice(cardId) {
+        const btn = document.getElementById(`voice-btn-${cardId}`);
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+          alert('Ditado não suportado nesse navegador.');
+          return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recog = new SpeechRecognition();
+        recog.lang = 'pt-BR';
+        recog.interimResults = false;
+        btn.classList.add('listening');
+        btn.textContent = '🎤 Ouvindo...';
+        recog.onresult = (e) => {
+          const text = e.results[0][0].transcript;
+          document.getElementById(`text-${cardId}`).value = text;
+        };
+        recog.onend = () => { btn.classList.remove('listening'); btn.textContent = '🎤 Ditar'; };
+        recog.onerror = () => { btn.classList.remove('listening'); btn.textContent = '🎤 Ditar'; alert('Erro no microfone.'); };
+        recog.start();
+      }
+
+      function esc(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // ===========================================
+      // ROUTER
+      // ===========================================
+      function route() {
+        const params = new URLSearchParams(location.search);
+        const view = params.get('view') || 'desktop';
+        if (view === 'mobile') {
+          desktopView.style.display = 'none';
+          mobileView.style.display = 'block';
+          qrModal.style.display = 'none';
+          floatingBar.style.display = 'none';
+          initMobile();
+        } else {
+          desktopView.style.display = 'block';
+          mobileView.style.display = 'none';
+          qrModal.style.display = 'none';
+          renderArticles();
+        }
+      }
+
+      window.addEventListener('popstate', route);
+      route();
+
+      // Expose for HTML onclick
+      window.startReview = window.startReview;
+      window.openQR = window.openQR;
+      window.viewResponse = window.viewResponse;
+    })();
+  </script>
+</body>
+</html>
